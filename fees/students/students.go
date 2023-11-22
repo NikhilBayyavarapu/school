@@ -62,7 +62,7 @@ func NewStudent(SID int, fname string, lname string, parent string, acadyear str
 	}
 }
 
-func (st *Student) PayFee(amount string) {
+func (st *Student) PayFee(amount string) Student {
 
 	i := 0
 	amountFloat, err := strconv.ParseFloat(amount, 64)
@@ -71,6 +71,9 @@ func (st *Student) PayFee(amount string) {
 	}
 
 	for amountFloat >= 0 && i < st.Totalmonths {
+		if st.Montharray[i] == "" {
+			continue
+		}
 		monthArrayFloat, err := strconv.ParseFloat(st.Montharray[i], 64)
 		if err != nil {
 			log.Fatal(err)
@@ -103,6 +106,7 @@ func (st *Student) PayFee(amount string) {
 
 	st.Remfee = strconv.FormatFloat(floatValFinal, 'f', -1, 64)
 
+	return *st
 }
 
 // RR3TuipRLnX3M5pY

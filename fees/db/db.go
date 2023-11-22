@@ -118,3 +118,70 @@ func QueryStudent(client *mongo.Client, id int) (students.Student, error) {
 
 	return result, err
 }
+
+func QueryPayFee(client *mongo.Client, id int, amount string) (students.Student, error) {
+	collectionName := "fees"
+	dbName := "feedb"
+
+	collection := client.Database(dbName).Collection(collectionName)
+	if collection == nil {
+		log.Fatal("No such collection")
+	}
+
+	filter := bson.M{"SID": id}
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer cursor.Close(context.Background())
+
+	var result students.Student
+
+	for cursor.Next(context.Background()) {
+		err := cursor.Decode(&result)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if err := cursor.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	st := result.PayFee(amount)
+	update := bson.M{
+		"$set": bson.M{
+			"RemFee":     st.Remfee,
+			"MonthArray": st.Montharray,
+		},
+	}
+
+	options := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
+	res := collection.FindOneAndUpdate(context.Background(), filter, update, options).Decode(&result)
+	if res != nil {
+		log.Fatal(res)
+	}
+
+	fmt.Printf("Updated document: %+v\n", result)
+	return result, err
+}
+
+func QueryAddStudent(client *mongo.Client, student students.Student) (students.Student, error) {
+	collectionName := "fees"
+	dbName := "feedb"
+
+	collection := client.Database(dbName).Collection(collectionName)
+	if collection == nil {
+		log.Fatal("No such collection")
+	}
+
+	_, err := collection.InsertOne(context.Background(), student)
+	if err != nil {
+		log.Fatal(err)
+		return students.Student{}, err
+	}
+
+	return student, nil
+}
