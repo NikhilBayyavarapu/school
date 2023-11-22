@@ -54,6 +54,7 @@ func NewStudent(SID int, fname string, lname string, parent string, acadyear str
 		Acadyear:    acadyear,
 		Class:       class,
 		Section:     section,
+		Busfee:      busfee,
 		Tutionfee:   tutionfee,
 		Totalfee:    totalfee,
 		Totalmonths: totalmonths,
