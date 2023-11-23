@@ -119,7 +119,7 @@ func QueryStudent(client *mongo.Client, id int) (students.Student, error) {
 	return result, err
 }
 
-func QueryPayFee(client *mongo.Client, id int, amount string) (students.Student, error) {
+func QueryPayFee(client *mongo.Client, id int, amount float32) (students.Student, error) {
 	collectionName := "fees"
 	dbName := "feedb"
 
@@ -154,7 +154,7 @@ func QueryPayFee(client *mongo.Client, id int, amount string) (students.Student,
 	update := bson.M{
 		"$set": bson.M{
 			"RemFee":     st.Remfee,
-			"MonthArray": st.Montharray,
+			"Montharray": st.Montharray,
 		},
 	}
 

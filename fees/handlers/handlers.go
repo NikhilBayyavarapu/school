@@ -45,7 +45,17 @@ func QueryAddStudentHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Unable to convert Months")
 	}
 
-	st := students.NewStudent(int(sid), fname, lname, parent, contact, acadyear, int(cls), section, busfee, tutionfee, int(months))
+	bfee, err := strconv.ParseFloat(busfee, 32)
+	if err != nil {
+		log.Fatal("Unable to convert BusFee")
+	}
+
+	tfee, err := strconv.ParseFloat(tutionfee, 32)
+	if err != nil {
+		log.Fatal("Unable to convert TutionFee")
+	}
+
+	st := students.NewStudent(int(sid), fname, lname, parent, contact, acadyear, int(cls), section, float32(bfee), float32(tfee), int(months))
 
 	client := db.GetClient()
 	result, err := db.QueryAddStudent(client, *st)
@@ -131,10 +141,11 @@ func QueryPayFeeHanlder(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Unable to get Student ID")
 	}
 	amount := vars["amount"]
+	amountConv, err := strconv.ParseFloat(amount, 32)
 
 	client := db.GetClient()
 
-	result, err := db.QueryPayFee(client, int(id), amount)
+	result, err := db.QueryPayFee(client, int(id), float32(amountConv))
 	if result.SID == 0 {
 		w.WriteHeader(500)
 		w.Write([]byte("No such student exists"))

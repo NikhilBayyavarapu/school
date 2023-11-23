@@ -1,50 +1,32 @@
 package students
 
-import (
-	"strconv"
-
-	"log"
-)
-
 type Student struct {
-	SID         int      `bson:"SID"`
-	Fname       string   `bson:"Fname"`
-	Lname       string   `bson:"Lname"`
-	Parent      string   `bson:"Parent"`
-	Contact     string   `bson:"Contact"`
-	Acadyear    string   `bson:"Acadyear"`
-	Class       int      `bson:"Class"`
-	Section     string   `bson:"Section"`
-	Busfee      string   `bson:"Busfee"`
-	Tutionfee   string   `bson:"Tutionfee"`
-	Totalfee    string   `bson:"Totalfee"`
-	Totalmonths int      `bson:"Totalmonths"`
-	Montharray  []string `bson:"Montharray"`
-	Remfee      string   `bson:"Remfee"`
+	SID         int       `bson:"SID"`
+	Fname       string    `bson:"Fname"`
+	Lname       string    `bson:"Lname"`
+	Parent      string    `bson:"Parent"`
+	Contact     string    `bson:"Contact"`
+	Acadyear    string    `bson:"Acadyear"`
+	Class       int       `bson:"Class"`
+	Section     string    `bson:"Section"`
+	Busfee      float32   `bson:"Busfee"`
+	Tutionfee   float32   `bson:"Tutionfee"`
+	Totalfee    float32   `bson:"Totalfee"`
+	Totalmonths int       `bson:"Totalmonths"`
+	Montharray  []float32 `bson:"Montharray"`
+	Remfee      float32   `bson:"Remfee"`
 }
 
-func NewStudent(SID int, fname string, lname string, parent string, contact string, acadyear string, class int, section string, busfee string, tutionfee string, totalmonths int) *Student {
-	busfeeFloat, err := strconv.ParseFloat(busfee, 64)
-	if err != nil {
-		log.Fatal(err)
-	}
+func NewStudent(SID int, fname string, lname string, parent string, contact string, acadyear string, class int, section string, busfee float32, tutionfee float32, totalmonths int) *Student {
 
-	tutionfeeFloat, err := strconv.ParseFloat(tutionfee, 64)
-	if err != nil {
-		log.Fatal(err)
-	}
+	totalfee := busfee + tutionfee
 
-	totalfeeFloat := busfeeFloat + tutionfeeFloat
-	totalfee := strconv.FormatFloat(totalfeeFloat, 'f', -1, 64)
+	montharray := make([]float32, totalmonths)
 
-	montharray := make([]string, totalmonths)
-
-	permonth := float64(totalfeeFloat) / float64(totalmonths)
-
-	permonthString := strconv.FormatFloat(float64(permonth), 'f', -1, 64)
+	permonth := float32(totalfee) / float32(totalmonths)
 
 	for i := range montharray {
-		montharray[i] = permonthString
+		montharray[i] = permonth
 	}
 
 	return &Student{
@@ -65,49 +47,43 @@ func NewStudent(SID int, fname string, lname string, parent string, contact stri
 	}
 }
 
-func (st *Student) PayFee(amount string) Student {
+func (st *Student) PayFee(amount float32) Student {
 
 	i := 0
-	amountFloat, err := strconv.ParseFloat(amount, 64)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// amountFloat, err := strconv.ParseFloat(amount, 64)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	for amountFloat >= 0 && i < st.Totalmonths {
-		if st.Montharray[i] == "" {
+	for amount > 0 && i < st.Totalmonths {
+		if st.Montharray[i] <= 0 {
 			continue
 		}
-		monthArrayFloat, err := strconv.ParseFloat(st.Montharray[i], 64)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if amountFloat > monthArrayFloat {
-			amountFloat -= monthArrayFloat
-			st.Montharray[i] = ""
+		// monthArrayFloat, err := strconv.ParseFloat(st.Montharray[i], 64)
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		if amount > st.Montharray[i] {
+			amount -= st.Montharray[i]
+			st.Montharray[i] = 0
 			i++
 		} else {
-			monthArrayFloat -= amountFloat
-			st.Montharray[i] = strconv.FormatFloat(monthArrayFloat, 'f', -1, 64)
+			st.Montharray[i] -= amount
 			break
 		}
 	}
 
-	var floatValFinal float64
+	var floatValFinal float32
 	for _, val := range st.Montharray {
 
-		if val == "" {
+		if val <= 0 {
 			continue
 		} else {
-			floatVal, err := strconv.ParseFloat(val, 64)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			floatValFinal += floatVal
+			floatValFinal += val
 		}
 	}
 
-	st.Remfee = strconv.FormatFloat(floatValFinal, 'f', -1, 64)
+	st.Remfee = floatValFinal
 
 	return *st
 }

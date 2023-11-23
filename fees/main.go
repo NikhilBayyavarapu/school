@@ -27,21 +27,8 @@ func main() {
 		fmt.Println("Cannt connect to DB", err)
 		return
 	}
-
-	// var newStudent = students.NewStudent(1, "b", "N", "i", "15-16", 2, "a", "1000", "1000", 5)
-	// newStudent.PayFee("600")
-	// for i := range newStudent.Montharray {
-	// 	if newStudent.Montharray[i] == "" {
-	// 		fmt.Println("empty")
-	// 	} else {
-	// 		fmt.Println(newStudent.Montharray[i])
-	// 	}
-	// }
-
-	// fmt.Println(newStudent.Remfee)
 	r := mux.NewRouter()
 	setupRoutes(r)
-	// db.EmptyCollection(db.GetClient())
 	http.ListenAndServe(":8080", r)
 }
 
