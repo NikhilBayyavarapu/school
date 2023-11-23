@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fees/db"
 	"fees/students"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -14,7 +13,6 @@ import (
 
 func QueryAddStudentHandler(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("Entered")
 	err := r.ParseForm()
 	if err != nil {
 		log.Fatal("Cant get form Data")
@@ -24,6 +22,7 @@ func QueryAddStudentHandler(w http.ResponseWriter, r *http.Request) {
 	fname := r.FormValue("fname")
 	lname := r.FormValue("lname")
 	parent := r.FormValue("parent")
+	contact := r.FormValue("contact")
 	acadyear := r.FormValue("acadyear")
 	class := r.FormValue("class")
 	section := r.FormValue("section")
@@ -31,10 +30,6 @@ func QueryAddStudentHandler(w http.ResponseWriter, r *http.Request) {
 	tutionfee := r.FormValue("tutionfee")
 	totalmonths := r.FormValue("totalmonths")
 
-	fmt.Println(fname)
-	fmt.Println("AFTER")
-	fmt.Println(SID)
-	fmt.Println("AFTER")
 	sid, err := strconv.ParseInt(SID, 10, 32)
 	if err != nil {
 		log.Fatal("Unable to convert Student ID")
@@ -50,7 +45,7 @@ func QueryAddStudentHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Unable to convert Months")
 	}
 
-	st := students.NewStudent(int(sid), fname, lname, parent, acadyear, int(cls), section, busfee, tutionfee, int(months))
+	st := students.NewStudent(int(sid), fname, lname, parent, contact, acadyear, int(cls), section, busfee, tutionfee, int(months))
 
 	client := db.GetClient()
 	result, err := db.QueryAddStudent(client, *st)

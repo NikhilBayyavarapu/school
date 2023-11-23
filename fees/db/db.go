@@ -159,13 +159,13 @@ func QueryPayFee(client *mongo.Client, id int, amount string) (students.Student,
 	}
 
 	options := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
-	res := collection.FindOneAndUpdate(context.Background(), filter, update, options).Decode(&result)
+	res := collection.FindOneAndUpdate(context.Background(), filter, update, options).Decode(&st)
 	if res != nil {
 		log.Fatal(res)
 	}
 
-	fmt.Printf("Updated document: %+v\n", result)
-	return result, err
+	fmt.Printf("Updated document: %+v\n", st)
+	return st, err
 }
 
 func QueryAddStudent(client *mongo.Client, student students.Student) (students.Student, error) {
@@ -184,4 +184,22 @@ func QueryAddStudent(client *mongo.Client, student students.Student) (students.S
 	}
 
 	return student, nil
+}
+
+func EmptyCollection(client *mongo.Client) error {
+	collectionName := "fees"
+	dbName := "feedb"
+
+	collection := client.Database(dbName).Collection(collectionName)
+	if collection == nil {
+		log.Fatal("No such collection")
+	}
+
+	filter := bson.M{}
+	_, err := collection.DeleteMany(context.Background(), filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return err
 }

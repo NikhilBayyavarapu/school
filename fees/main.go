@@ -41,7 +41,7 @@ func main() {
 	// fmt.Println(newStudent.Remfee)
 	r := mux.NewRouter()
 	setupRoutes(r)
-	//db.QueryClass(db.GetClient(), 10)
+	// db.EmptyCollection(db.GetClient())
 	http.ListenAndServe(":8080", r)
 }
 

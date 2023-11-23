@@ -7,22 +7,23 @@ import (
 )
 
 type Student struct {
-	SID         int
-	Fname       string
-	Lname       string
-	Parent      string
-	Acadyear    string
-	Class       int
-	Section     string
-	Busfee      string
-	Tutionfee   string
-	Totalfee    string
-	Totalmonths int
-	Montharray  []string
-	Remfee      string
+	SID         int      `bson:"SID"`
+	Fname       string   `bson:"Fname"`
+	Lname       string   `bson:"Lname"`
+	Parent      string   `bson:"Parent"`
+	Contact     string   `bson:"Contact"`
+	Acadyear    string   `bson:"Acadyear"`
+	Class       int      `bson:"Class"`
+	Section     string   `bson:"Section"`
+	Busfee      string   `bson:"Busfee"`
+	Tutionfee   string   `bson:"Tutionfee"`
+	Totalfee    string   `bson:"Totalfee"`
+	Totalmonths int      `bson:"Totalmonths"`
+	Montharray  []string `bson:"Montharray"`
+	Remfee      string   `bson:"Remfee"`
 }
 
-func NewStudent(SID int, fname string, lname string, parent string, acadyear string, class int, section string, busfee string, tutionfee string, totalmonths int) *Student {
+func NewStudent(SID int, fname string, lname string, parent string, contact string, acadyear string, class int, section string, busfee string, tutionfee string, totalmonths int) *Student {
 	busfeeFloat, err := strconv.ParseFloat(busfee, 64)
 	if err != nil {
 		log.Fatal(err)
@@ -51,6 +52,7 @@ func NewStudent(SID int, fname string, lname string, parent string, acadyear str
 		Fname:       fname,
 		Lname:       lname,
 		Parent:      parent,
+		Contact:     contact,
 		Acadyear:    acadyear,
 		Class:       class,
 		Section:     section,
