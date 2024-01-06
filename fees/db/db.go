@@ -15,7 +15,10 @@ var client *mongo.Client
 
 func Connect() error {
 
-	clientDummy, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb+srv://root:RR3TuipRLnX3M5pY@fees.bfdmqbj.mongodb.net/?retryWrites=true&w=majority"))
+	connectionString := "mongodb://localhost:27017/"
+	// connectionStringAtlas := "mongodb+srv://root:RR3TuipRLnX3M5pY@fees.bfdmqbj.mongodb.net/?retryWrites=true&w=majority"
+
+	clientDummy, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectionString))
 	if err == nil {
 		fmt.Println("Connected to DB")
 	}
@@ -89,6 +92,8 @@ func QueryStudent(client *mongo.Client, id int) (students.Student, error) {
 		log.Fatal("No such collection")
 	}
 
+	fmt.Println(id)
+
 	filter := bson.M{"SID": id}
 	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
@@ -129,6 +134,7 @@ func QueryPayFee(client *mongo.Client, id int, amount float32) (students.Student
 	}
 
 	filter := bson.M{"SID": id}
+	fmt.Println(filter)
 	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		log.Fatal(err)
@@ -150,10 +156,14 @@ func QueryPayFee(client *mongo.Client, id int, amount float32) (students.Student
 		log.Fatal(err)
 	}
 
-	st := result.PayFee(amount)
+	st, err := result.PayFee(amount)
+	if err != nil {
+		return st, err
+	}
+
 	update := bson.M{
 		"$set": bson.M{
-			"RemFee":     st.Remfee,
+			"Remfee":     st.Remfee,
 			"Montharray": st.Montharray,
 		},
 	}

@@ -1,5 +1,10 @@
 package students
 
+import (
+	"errors"
+	"fmt"
+)
+
 type Student struct {
 	SID         int       `bson:"SID"`
 	Fname       string    `bson:"Fname"`
@@ -47,24 +52,25 @@ func NewStudent(SID int, fname string, lname string, parent string, contact stri
 	}
 }
 
-func (st *Student) PayFee(amount float32) Student {
+func (st *Student) PayFee(amount float32) (Student, error) {
 
+	if amount > st.Remfee {
+		return Student{}, errors.New("Cannot pay more than remaining fee")
+	}
+
+	fmt.Println(amount)
 	i := 0
-	// amountFloat, err := strconv.ParseFloat(amount, 64)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	for amount > 0 && i < st.Totalmonths {
 		if st.Montharray[i] <= 0 {
+			fmt.Println("Here at zero", st.Montharray[i])
+			i++
 			continue
 		}
-		// monthArrayFloat, err := strconv.ParseFloat(st.Montharray[i], 64)
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-		if amount > st.Montharray[i] {
+
+		if amount >= st.Montharray[i] {
+			fmt.Println(st.Montharray[i])
 			amount -= st.Montharray[i]
+			fmt.Println("After paying", st.Montharray[i])
 			st.Montharray[i] = 0
 			i++
 		} else {
@@ -85,7 +91,7 @@ func (st *Student) PayFee(amount float32) Student {
 
 	st.Remfee = floatValFinal
 
-	return *st
+	return *st, nil
 }
 
 // RR3TuipRLnX3M5pY
